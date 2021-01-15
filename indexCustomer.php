@@ -4,6 +4,10 @@ session_start();
 include 'koneksi.php';
 $sqlDataMeja = mysqli_query($koneksi,"select * from log_meja where id_log = '$_SESSION[id_log]'");
 $dataMeja = mysqli_fetch_assoc($sqlDataMeja);
+$sqlDataPesanan = mysqli_query($koneksi,"select * from pesanan where id_log = '$_SESSION[id_log]'");
+$dataPesanan = mysqli_fetch_assoc($sqlDataPesanan);
+$sqlDataJumlahPesanan = mysqli_query($koneksi,"select count(id_log) as total from pesanan where id_log = '$_SESSION[id_log]'");
+$dataJumlahPesanan = mysqli_fetch_assoc($sqlDataJumlahPesanan);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -156,7 +160,34 @@ $dataMeja = mysqli_fetch_assoc($sqlDataMeja);
         
         <!-- partial -->
         <div class="main-panel" style="width:100%">
+          <button type="button" class="btn btn-icons btn-rounded btn-success" style="position:fixed;right:10px;bottom:30px;z-index:999;width:75px;height:75px">
+            <i class="mdi mdi-email" ></i> <?php echo $sqlDataJumlahPesanan['total'];?>
+          </button>
           <div class="content-wrapper">
+          <?php
+            if(isset($_GET['successMessage']) || isset($_GET['failedMessage'])){
+            echo'
+              <div class="row">
+                ';
+                if(isset($_GET['failedMessage'])){
+                echo'
+                <div class="alert alert-danger col-md-12" role="alert">
+                  '.$_GET['failedMessage'].'
+                </div>
+                ';
+                }
+                if(isset($_GET['successMessage'])){
+                  echo'
+                  <div class="alert alert-success col-md-12" role="alert">
+                  '.$_GET['successMessage'].'
+                  </div>
+                  ';
+                  }
+                echo'
+              </div>
+              ';
+              }
+            ?>
           
             <div class="row">
               <div class="col-lg-12 grid-margin stretch-card">
@@ -183,14 +214,29 @@ $dataMeja = mysqli_fetch_assoc($sqlDataMeja);
                         <tr>
                             <td><img src="'.$dataMakanan['gambar'].'" style="width:70px;height:70px" /></td>
                             <td>'.$dataMakanan['nama_menu'].'</td>
+                            ';
+                          if(isset($_GET['id_select_menu']) and $_GET['id_select_menu']==$dataMakanan['id_menu'] ){
+                            echo'
+                            <td>'.$dataMakanan['harga'].'</td>
+                            <form action="fungsi.php?code=tambah_pesanan&id='.$dataMeja['id_log'].'&id_menu='.$_GET['id_select_menu'].'" method="post">
+                            <td><input type="text" name="qty" class="form-control" id="exampleInputEmail1" placeholder="Jumlah"></td>
+                            <td><button type="submit" class="btn btn-success btn-fw">Simpan</button></td>
+                            </form>
+                            ';
+                          }
+                          
+                        else {
+                          echo'
                             <td>'.$dataMakanan['harga'].'</td>
                             <td>
                               <label class="badge badge-danger">Discount</label>
                             </td>
-                            <td><button type="button" class="btn btn-success btn-fw">Tamba ke pesanan</button></td>
+                            <td><a href="indexCustomer.php?id_select_menu='.$dataMakanan['id_menu'].'"><button type="button" class="btn btn-success btn-fw">Tamba ke pesanan</button></a></td>
 
                           </tr>
-                        ';
+                          ';
+                        }
+                        
 
                       };?>
                           
@@ -228,9 +274,12 @@ $dataMeja = mysqli_fetch_assoc($sqlDataMeja);
                             <td><img src="'.$dataMakanan['gambar'].'" style="width:70px;height:70px" /></td>
                             <td>'.$dataMakanan['nama_menu'].'</td>
                         ';
-                        if(isset($_GET['id_select_menu'])){
+                        if(isset($_GET['id_select_menu']) and $_GET['id_select_menu']==$dataMakanan['id_menu'] ){
                           echo'
-                          <td><input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email"></td>
+                          <td>'.$dataMakanan['harga'].'</td>
+                          <td><input type="text" class="form-control" id="exampleInputEmail1" placeholder="Jumlah"></td>
+                          <td><a href="indexCustomer.php?id_select_menu='.$dataMakanan['id_menu'].'"><button type="button" class="btn btn-success btn-fw">Simpan</button></a></td>
+
                           ';
                         }
                         else {

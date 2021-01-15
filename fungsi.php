@@ -92,5 +92,13 @@ switch($code){
         echo  $_SESSION['id_log'];   
 
     break;
+    case 'tambah_pesanan':
+        $sqlTambahPesanan = mysqli_query($koneksi,"INSERT INTO pesanan(id_log,id_menu,qty,status) VALUES ('$_GET[id]','$_GET[id_menu]','$_POST[qty]','0')");
+        if($sqlTambahPesanan){
+            header("location:indexCustomer.php?successMessage=Berhasil Menambah Pesanan");
+        }else{
+            header("location:indexCustomer.php?failedMessage=Gagal memasukan pesanan silahkan coba lagi");
+        }
+    break;
 }
 ?>
